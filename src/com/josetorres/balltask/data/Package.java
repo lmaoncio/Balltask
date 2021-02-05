@@ -18,7 +18,7 @@ public class Package {
         dataToTransfer.add(rectangleSize);
 
         for (int i = 0; i < dataToTransfer.size(); i++) {
-            data +=  dataToTransfer.get(i) + ".";
+            data +=  dataToTransfer.get(i) + ",";
         }
     }
 

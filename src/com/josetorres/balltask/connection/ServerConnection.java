@@ -25,7 +25,7 @@ public class ServerConnection implements Runnable {
     public void run() {
         try {
             while(true) {
-                while (!channel.isStatus() && !channel.isConnection()) {
+                while (!channel.isStatus()) {
                     Socket socket = serverSocket.accept();
                     System.out.println("SERVER: GOT CONNECTION REQUEST");
                     new ClientIdentifier(channel, socket);

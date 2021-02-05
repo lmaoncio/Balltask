@@ -31,7 +31,12 @@ public class HealthChecker implements Runnable {
 
             if (!health) {
                 System.out.println("HEALTH: ACK OK NOT RECEIVED");
-                channel.setStatus(false);
+                this.channel.setStatus(false);
+                try {
+                    this.channel.getChannelSocket().close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

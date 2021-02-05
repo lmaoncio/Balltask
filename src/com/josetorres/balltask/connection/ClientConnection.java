@@ -25,49 +25,26 @@ public class ClientConnection implements Runnable {
             Socket clientSocket = null;
 
             while (true) {
-                if (!this.channel.isStatus() && !this.channel.isConnection()) {
-                    DataInputStream dataInputStream = null;
+                if (!this.channel.isStatus()) {
                     clientSocket = new Socket(IP, 8000);
-                    System.out.println("CLIENT: TRYING TO CONNECT");
 
-                    if (clientSocket != null) {
+                    System.out.println("CLIENT: SENDING BALLTASK REQUEST");
+                    DataOutputStream dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
+                    String data = "BALLTASK";
+                    dataOutputStream.writeUTF(data);
 
-                        this.channel.setConnection(true);
-                        System.out.println("CLIENT: SENDING BALLTASK REQUEST");
+                    DataInputStream dataInputStream = new DataInputStream((clientSocket.getInputStream()));
+                    String response = dataInputStream.readUTF();
 
-                        String data = "BALLTASK";
-                        OutputStream outputStream = clientSocket.getOutputStream();
-                        DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
-                        dataOutputStream.writeUTF(data);
-                        dataOutputStream.flush();
-
-                        boolean check = false;
-
-                        while (!check) {
-                            if (dataInputStream == null) {
-                                dataInputStream = new DataInputStream(clientSocket.getInputStream());
-                            }
-
-                            data = dataInputStream.readUTF();
-
-                            if (data.equals("OK")) {
-                                this.channel.setConnection(false);
-                                this.channel.setChannelStatus(clientSocket);
-                                check = true;
-                                System.out.println("CLIENT: CI OK SETTING CHANNEL");
-                            } else {
-                                this.channel.setConnection(false);
-                                check = true;
-
-                                System.out.println("CLIENT: ERROR IDENTIFYING");
-                            }
-                        }
+                    if (!this.channel.isStatus() && response.equals("OK")) {
+                        this.channel.setChannelStatus(clientSocket);
+                        System.out.println("CLIENT: CI OK SETTING CHANNEL");
                     }
-                    Thread.sleep(200);
                 }
+                Thread.sleep(200);
             }
         } catch (IOException | InterruptedException e) {
-            System.out.println("CLIENT: ERROR CONNECTING" + e);
+            System.out.println("CLIENT: ERROR CONNECTING");
         }
     }
 }

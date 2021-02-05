@@ -22,31 +22,22 @@ public class ClientIdentifier implements Runnable {
         boolean check = false;
         try {
             while (!check) {
-
-                this.channel.setConnection(true);
-
                 DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
 
                 String data = dataInputStream.readUTF();
 
                 if (data.equals("BALLTASK")) {
-                    System.out.println("CI: GOT A BALLTASK REQUEST");
-                    data = "OK";
-                    OutputStream outputStream = socket.getOutputStream();
-                    DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
-                    dataOutputStream.writeUTF(data);
-                    dataOutputStream.flush();
-
                     this.channel.setChannelStatus(socket);
-                    this.channel.setConnection(false);
+
+                    System.out.println("CI: GOT A BALLTASK REQUEST");
+                    DataOutputStream dataOutputStream = new DataOutputStream(this.socket.getOutputStream());
+                    dataOutputStream.writeUTF("OK");
                     check = true;
                     System.out.println("CI: SETTING CHANNEL AND SENDING OK MESSAGE");
                 } else {
                     check = true;
-                    this.channel.setConnection(false);
                     System.out.println("CI: YOU ARE NOT IDENTIFIED AS BALLTASK");
                 }
-
             }
         } catch (IOException e) {
             e.printStackTrace();
