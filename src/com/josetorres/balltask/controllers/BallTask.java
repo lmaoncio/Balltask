@@ -10,7 +10,6 @@ import com.josetorres.balltask.views.View;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -20,14 +19,11 @@ public class BallTask extends JFrame {
     private final LinkedList<Hole> holeList = new LinkedList<>();
     private final LinkedList<BlackHole> blackHoleList = new LinkedList<>();
     private final GridBagConstraints gbc = new GridBagConstraints();
-    private View view = new View(holeList, blackHoleList);
+    private final View view = new View(holeList, blackHoleList);
     private final Control controlPanel = new Control();
-    private final Statistics statistics;
-    private Channel channel = new Channel(this);
-    private final ServerConnection serverConnection;
-    private final ClientConnection clientConnection;
+    private final Channel channel = new Channel(this);
 
-    public BallTask(String IP) throws IOException {
+    public BallTask(String IP) {
 
         setWindowLayout();
         setViewLayout();
@@ -38,9 +34,10 @@ public class BallTask extends JFrame {
         createBlackHoles();
         createHoles();
 
-        serverConnection = new ServerConnection(channel);
-        clientConnection = new ClientConnection(channel, IP );
-        statistics = new Statistics(this);
+        new ServerConnection(channel);
+        new ClientConnection(channel, IP);
+        new Statistics(this);
+
         view.paint();
     }
 
@@ -127,14 +124,6 @@ public class BallTask extends JFrame {
         setResizable(true);
     }
 
-    public ServerConnection getServerConnection() {
-        return serverConnection;
-    }
-
-    public ClientConnection getClientConnection() {
-        return clientConnection;
-    }
-
     public Control getControlPanel() {
         return controlPanel;
     }
@@ -143,16 +132,8 @@ public class BallTask extends JFrame {
         return view;
     }
 
-    public void setView(View view) {
-        this.view = view;
-    }
-
     public Channel getChannel() {
         return channel;
-    }
-
-    public void setChannel(Channel channel) {
-        this.channel = channel;
     }
 
     public List<Hole> getHoleList() {
@@ -162,4 +143,5 @@ public class BallTask extends JFrame {
     public List<BlackHole> getBlackHoleList() {
         return blackHoleList;
     }
+
 }

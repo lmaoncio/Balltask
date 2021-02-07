@@ -6,58 +6,34 @@ import java.net.Socket;
 
 public class ServerConnection implements Runnable {
     private ServerSocket serverSocket;
-    private Channel channel;
-    private Thread serverThread;
+    private final Channel channel;
 
     public ServerConnection(Channel channel) {
-        this.serverThread = new Thread(this);
+        Thread serverThread = new Thread(this);
 
         try {
             this.serverSocket = new ServerSocket(8000);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("SERVER: ERROR CREATING SERVER SOCKET");
         }
 
         this.channel = channel;
-        this.serverThread.start();
+        serverThread.start();
     }
 
     public void run() {
         try {
             while(true) {
-                while (!channel.isStatus()) {
+                Thread.sleep(200);
+                while (!this.channel.isStatus()) {
                     Socket socket = serverSocket.accept();
-                    System.out.println("SERVER: GOT CONNECTION REQUEST");
                     new ClientIdentifier(channel, socket);
+                    this.channel.setDirection("RIGHT");
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException | InterruptedException e) {
+            System.out.println("SERVER: ERROR CREATING CONNECTION SOCKET");
         }
-    }
-
-    public Thread getServerThread() {
-        return serverThread;
-    }
-
-    public void setServerThread(Thread serverThread) {
-        this.serverThread = serverThread;
-    }
-
-    public ServerSocket getServerSocket() {
-        return serverSocket;
-    }
-
-    public void setServerSocket(ServerSocket serverSocket) {
-        this.serverSocket = serverSocket;
-    }
-
-    public Channel getChannel() {
-        return channel;
-    }
-
-    public void setChannel(Channel channel) {
-        this.channel = channel;
     }
 }
 

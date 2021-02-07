@@ -4,7 +4,6 @@ import java.awt.*;
 
 public class BlackHole {
     public static final int MAX_AMOUNT = 1;
-    public static final int MIN_AMOUNT = 0;
     private int amount = 0;
     private int x, y;
     private Color color;

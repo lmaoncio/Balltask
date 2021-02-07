@@ -13,11 +13,11 @@ import java.net.Socket;
 public class Channel implements Runnable {
 
     private Socket channelSocket;
-    private Hole hole;
     private boolean status;
     private Thread channelThread;
     private final BallTask ballTask;
     private HealthChecker healthChecker;
+    private String direction;
 
     public Channel(BallTask ballTask) {
         this.ballTask = ballTask;
@@ -28,17 +28,12 @@ public class Channel implements Runnable {
     @Override
     public void run() {
         try {
-            DataInputStream dataInputStream = null;
+            DataInputStream dataInputStream;
             while (this.status) {
-                System.out.println("CHANNEL: READING DATA");
                 dataInputStream = new DataInputStream(channelSocket.getInputStream());
                 String data = dataInputStream.readUTF();
 
-                if (data == null) {
-                    System.out.println("CHANNEL: NO DATA");
-                    this.status = false;
-                } else if (data.split(",")[0].equals("HOLE")) {
-                    System.out.println("CHANNEL: GOT HOLE");
+                if (data.split(",")[0].equals("HOLE")) {
                     ballTask.createHole(
                             data.split(",")[1],
                             data.split(",")[2],
@@ -47,17 +42,16 @@ public class Channel implements Runnable {
                             data.split(",")[7],
                             data.split(",")[8]);
                 } else if (data.equals("ACK")) {
-                    System.out.println("CHANNEL: GOT ACK");
                     DataOutputStream dataOutputStream = new DataOutputStream(this.channelSocket.getOutputStream());
                     dataOutputStream.writeUTF("OK");
-                    System.out.println("CHANNEL: SENT OK");
                 } else if (data.equals("OK")) {
-                    System.out.println("CHANNEL: GOT ACK OK");
                     this.healthChecker.setHealth(true);
                 }
+                System.out.println(direction);
             }
+
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("CHANNEL: ERROR READING");
             this.status = false;
         }
     }
@@ -69,7 +63,7 @@ public class Channel implements Runnable {
             dataOutputStream.writeUTF(data);
         } catch (IOException e) {
             this.status = false;
-            e.printStackTrace();
+            System.out.println("CHANNEL: ERROR SENDING ACK");
         }
     }
 
@@ -98,16 +92,16 @@ public class Channel implements Runnable {
             ballTask.removeHole(hole);
             hole.setStatus("STOP");
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("HOLE: ERROR SENDING");
         }
     }
 
-    public Hole getHole() {
-        return hole;
+    public String getDirection() {
+        return direction;
     }
 
-    public void setHole(Hole hole) {
-        this.hole = hole;
+    public void setDirection(String direction) {
+        this.direction = direction;
     }
 
     public boolean isStatus() {
@@ -120,10 +114,6 @@ public class Channel implements Runnable {
 
     public Socket getChannelSocket() {
         return channelSocket;
-    }
-
-    public void setChannelSocket(Socket channelSocket) {
-        this.channelSocket = channelSocket;
     }
 
 }

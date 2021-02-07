@@ -2,14 +2,15 @@ package com.josetorres.balltask.controllers;
 
 import com.josetorres.balltask.views.Control;
 
-public class Statistics extends Thread {
+public class Statistics implements Runnable {
     private final Control control;
     private final BallTask ballTask;
 
     public Statistics(BallTask ballTask) {
         this.ballTask = ballTask;
         this.control = ballTask.getControlPanel();
-        start();
+        Thread statisticsThread = new Thread(this);
+        statisticsThread.start();
     }
 
     @Override

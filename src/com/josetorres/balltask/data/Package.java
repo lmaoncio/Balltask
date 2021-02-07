@@ -26,7 +26,4 @@ public class Package {
         return data;
     }
 
-    public void setDataToTransfer(List<String> dataToTransfer) {
-        this.dataToTransfer = dataToTransfer;
-    }
 }
