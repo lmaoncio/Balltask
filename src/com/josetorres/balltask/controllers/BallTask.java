@@ -15,13 +15,14 @@ import java.util.List;
 
 public class BallTask extends JFrame {
     private final static int NUM_HOLES = 5;
-    private final static int NUM_BLACK_HOLES = 1;
+    private final static int NUM_BLACK_HOLES = 2;
     private final LinkedList<Hole> holeList = new LinkedList<>();
     private final LinkedList<BlackHole> blackHoleList = new LinkedList<>();
     private final GridBagConstraints gbc = new GridBagConstraints();
     private final View view = new View(holeList, blackHoleList);
     private final Control controlPanel = new Control();
     private final Channel channel = new Channel(this);
+    private Statistics statistics;
 
     public BallTask(String IP) {
 
@@ -36,9 +37,38 @@ public class BallTask extends JFrame {
 
         new ServerConnection(channel);
         new ClientConnection(channel, IP);
-        new Statistics(this);
+        statistics = new Statistics(this);
+
+        controlPanel.getPlayBtn().addActionListener(e -> {
+            for (int i = 0; i < holeList.size(); i++) {
+                analyzeStatus(holeList.get(i));
+            }
+        });
+
+        controlPanel.getPauseBtn().addActionListener(e -> {
+            for (int i = 0; i < holeList.size(); i++) {
+                holeList.get(i).setStatus("PAUSE");
+            }
+        });
+
+        controlPanel.getStopBtn().addActionListener(e -> {
+            restart();
+            new Statistics(this);
+        });
+
 
         view.paint();
+    }
+
+    public void restart() {
+        for (int i = 0; i < holeList.size(); i++) {
+            holeList.get(i).setStatus("STOP");
+        }
+        holeList.clear();
+        blackHoleList.clear();
+        statistics.setStatus(false);
+        createHoles();
+        createBlackHoles();
     }
 
     public void analyzeStatus(Hole hole) {
@@ -52,15 +82,26 @@ public class BallTask extends JFrame {
 
         if (intersect) {
             hole.setStatus("SLOW");
-        } else if (hole.getRectangle().intersects(0, 0, 1, view.getHeight()) && channel.isStatus()) {
+        } else if (hole.getRectangle().intersects(0, 0, 1, view.getHeight()) && channel.isStatus() && channel.getDirection().equals("LEFT")) {
+            hole.setStatus("SEND");
+        } else if (hole.getRectangle().intersects(view.getWidth(), 0, 1, view.getHeight()) && channel.isStatus() && channel.getDirection().equals("RIGHT")) {
             hole.setStatus("SEND");
         } else {
             hole.setStatus("NORMAL");
         }
     }
 
-    public void createHole(String x, String y, String angleX, String angleY, String Color, String rectangleSize) {
-        Hole hole = new Hole(this.blackHoleList, this, view.getWidth(), Integer.parseInt(y));
+    public void createHoleLeft(String x, String y, String angleX, String angleY, String Color, String rectangleSize) {
+        Hole hole = new Hole(this.blackHoleList, this, view.getWidth() - Integer.parseInt(rectangleSize) * 2, Integer.parseInt(y));
+        hole.setAngleX(Integer.parseInt(angleX));
+        hole.setAngleY(Integer.parseInt(angleY));
+        hole.setRectangleSize(Integer.parseInt(rectangleSize));
+        holeList.add(hole);
+        hole.getHoleThread().start();
+    }
+
+    public void createHoleRight(String x, String y, String angleX, String angleY, String Color, String rectangleSize) {
+        Hole hole = new Hole(this.blackHoleList, this, Integer.parseInt(rectangleSize) + 1, Integer.parseInt(y));
         hole.setAngleX(Integer.parseInt(angleX));
         hole.setAngleY(Integer.parseInt(angleY));
         hole.setRectangleSize(Integer.parseInt(rectangleSize));
@@ -83,7 +124,8 @@ public class BallTask extends JFrame {
         for (int i = 0; i < NUM_BLACK_HOLES; i++) {
             int x = (int) (Math.random() * view.getWidth());
             int y = (int) (Math.random() * view.getHeight());
-            blackHoleList.add(new BlackHole(x, y));
+            BlackHole blackHole = new BlackHole(x, y);
+            blackHoleList.add(blackHole);
         }
     }
 

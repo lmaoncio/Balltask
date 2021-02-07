@@ -16,7 +16,8 @@ public class Hole implements Runnable {
     private int angleX = 1, angleY = 1;
     private Color color;
     private Rectangle rectangle;
-    private int rectangleSize = 50;
+    private int rectangleSize = (int) (Math.random() * (200 - 50) + 50);
+    private String direction;
 
     public Hole(LinkedList<BlackHole> blackHoleList, BallTask ballTask, int x, int y) {
         this.blackHoleList = blackHoleList;
@@ -55,15 +56,25 @@ public class Hole implements Runnable {
             if (blackHoleIntersected != null) {
                 blackHoleIntersected.put();
                 while (this.getRectangle().intersects(blackHoleIntersected.getRectangle())) {
+                    while (status.equals("PAUSE")) {
+                        Thread.sleep(50);
+                    }
                     move(50);
+                    this.setColor(Color.red);
                 }
                 if (blackHoleIntersected.getAmount() == 1) {
                     blackHoleIntersected.get();
+                    this.setColor(Color.black);
                 }
             }
         }
         if (status.equals("SEND")) {
             ballTask.getChannel().send(this);
+        }
+        if (status.equals("PAUSE")) {
+            while (status.equals("PAUSE")) {
+                Thread.sleep(50);
+            }
         }
     }
 
@@ -79,7 +90,7 @@ public class Hole implements Runnable {
         }
         x = x + angleX;
         y = y + angleY;
-        rectangle.setRect(x, y, 50, 50);
+        rectangle.setRect(x, y, rectangleSize, rectangleSize);
 
         try {
             Thread.sleep(speed);
@@ -178,6 +189,14 @@ public class Hole implements Runnable {
 
     public void setAngleY(int angleY) {
         this.angleY = angleY;
+    }
+
+    public String getDirection() {
+        return direction;
+    }
+
+    public void setDirection(String direction) {
+        this.direction = direction;
     }
 }
 

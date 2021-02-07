@@ -8,8 +8,9 @@ public class Package {
     private String data = "";
     private final String header = "HOLE";
 
-    public Package(String x, String y, String angleX, String angleY, String color, String rectangleSize) {
+    public Package(String direction, String x, String y, String angleX, String angleY, String color, String rectangleSize) {
         dataToTransfer.add(header);
+        dataToTransfer.add(direction);
         dataToTransfer.add(x);
         dataToTransfer.add(y);
         dataToTransfer.add(angleX);

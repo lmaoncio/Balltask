@@ -29,9 +29,11 @@ public class Control extends JPanel {
         gbc.weighty = 0.1;
         gbc.weightx = 0.1;
 
-        data = new String[2][2];
+        data = new String[4][4];
         data[0][0] = "HOLES";
         data[1][0] = "BLACK HOLES";
+        data[2][0] = "INSIDE";
+        data[3][0] = "OUTSIDE";
         String[] column = {"Description", "Valor"};
         JTable dataTable = new JTable(data, column);
         gbc.gridx = 0;
@@ -41,21 +43,21 @@ public class Control extends JPanel {
         playBtn = new JButton("PLAY");
         gbc.gridx = 0;
         gbc.gridy = 1;
-        gbc.gridwidth = 3;
+        gbc.gridwidth = 1;
         gbc.gridheight = 1;
         add(playBtn, gbc);
 
         pauseBtn = new JButton("PAUSE");
         gbc.gridx = 0;
         gbc.gridy = 2;
-        gbc.gridwidth = 3;
+        gbc.gridwidth = 1;
         gbc.gridheight = 1;
         add(pauseBtn, gbc);
 
         stopBtn = new JButton("STOP");
         gbc.gridx = 0;
         gbc.gridy = 3;
-        gbc.gridwidth = 3;
+        gbc.gridwidth = 1;
         gbc.gridheight = 1;
         add(stopBtn, gbc);
     }

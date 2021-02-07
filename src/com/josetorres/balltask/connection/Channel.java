@@ -34,13 +34,25 @@ public class Channel implements Runnable {
                 String data = dataInputStream.readUTF();
 
                 if (data.split(",")[0].equals("HOLE")) {
-                    ballTask.createHole(
-                            data.split(",")[1],
-                            data.split(",")[2],
-                            data.split(",")[3],
-                            data.split(",")[4],
-                            data.split(",")[7],
-                            data.split(",")[8]);
+                    if (data.split(",")[1].equals("LEFT")) {
+                        ballTask.createHoleLeft(
+                                data.split(",")[2],
+                                data.split(",")[3],
+                                data.split(",")[4],
+                                data.split(",")[5],
+                                data.split(",")[8],
+                                data.split(",")[9]);
+                    }
+                    if (data.split(",")[1].equals("RIGHT")) {
+                        ballTask.createHoleRight(
+                                data.split(",")[2],
+                                data.split(",")[3],
+                                data.split(",")[4],
+                                data.split(",")[5],
+                                data.split(",")[8],
+                                data.split(",")[9]);
+                    }
+
                 } else if (data.equals("ACK")) {
                     DataOutputStream dataOutputStream = new DataOutputStream(this.channelSocket.getOutputStream());
                     dataOutputStream.writeUTF("OK");
@@ -79,6 +91,7 @@ public class Channel implements Runnable {
 
     public void send(Hole hole) {
         Package data = new Package(
+                direction,
                 hole.getX() + "",
                 hole.getY() + "",
                 hole.getAngleX() + "",
@@ -95,6 +108,7 @@ public class Channel implements Runnable {
             System.out.println("HOLE: ERROR SENDING");
         }
     }
+
 
     public String getDirection() {
         return direction;

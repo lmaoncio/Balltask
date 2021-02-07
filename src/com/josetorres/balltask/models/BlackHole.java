@@ -7,13 +7,14 @@ public class BlackHole {
     private int amount = 0;
     private int x, y;
     private Color color;
+    private int rectangleSize = (int) (Math.random() * (200 - 50) + 50);
     private Rectangle rectangle;
 
     public BlackHole(int x , int y) {
         this.x = x;
         this.y = y;
         this.color = Color.yellow;
-        this.rectangle = new Rectangle(x,y,125,125);
+        this.rectangle = new Rectangle(x,y,rectangleSize,rectangleSize);
     }
     public synchronized void get()  {
         amount--;
