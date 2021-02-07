@@ -42,7 +42,7 @@ public class Hole implements Runnable {
     private void go() throws InterruptedException {
         ballTask.analyzeStatus(this);
         if (status.equals("NORMAL")) {
-            move(20);
+            move(5);
         }
         if (status.equals("SLOW")) {
             BlackHole blackHoleIntersected = null;
