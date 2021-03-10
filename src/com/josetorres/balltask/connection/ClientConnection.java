@@ -7,7 +7,7 @@ import java.net.Socket;
 
 public class ClientConnection implements Runnable {
     private final Channel channel;
-    private final String IP;
+    private String IP;
 
     public ClientConnection(Channel channel, String IP) {
         this.channel = channel;
@@ -17,12 +17,12 @@ public class ClientConnection implements Runnable {
     }
 
     public void run() {
-        try {
-            Socket clientSocket;
-
-            while (true) {
+        Socket clientSocket;
+        while (true) {
+            try {
                 if (!this.channel.isStatus()) {
-                    clientSocket = new Socket(IP, 8000);
+                    clientSocket = new Socket(IP, 5000);
+                    System.out.println(IP);
                     DataOutputStream dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
                     String data = "BALLTASK";
                     dataOutputStream.writeUTF(data);
@@ -36,9 +36,18 @@ public class ClientConnection implements Runnable {
                     }
                 }
                 Thread.sleep(200);
+            } catch (IOException | InterruptedException e) {
+                System.out.println("CLIENT: ERROR CONNECTION" + e);
             }
-        } catch (IOException | InterruptedException e) {
-            System.out.println("CLIENT: ERROR CONNECTING");
         }
+
+    }
+
+    public String getIP() {
+        return IP;
+    }
+
+    public void setIP(String IP) {
+        this.IP = IP;
     }
 }

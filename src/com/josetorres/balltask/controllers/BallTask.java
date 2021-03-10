@@ -15,13 +15,15 @@ import java.util.List;
 
 public class BallTask extends JFrame {
     private final static int NUM_HOLES = 5;
-    private final static int NUM_BLACK_HOLES = 2;
+    private final static int NUM_BLACK_HOLES = 1;
     private final LinkedList<Hole> holeList = new LinkedList<>();
     private final LinkedList<BlackHole> blackHoleList = new LinkedList<>();
     private final GridBagConstraints gbc = new GridBagConstraints();
     private final View view = new View(holeList, blackHoleList);
     private final Control controlPanel = new Control();
     private final Channel channel = new Channel(this);
+    ClientConnection clientConnection;
+    ServerConnection serverConnection;
     private Statistics statistics;
 
     public BallTask(String IP) {
@@ -35,8 +37,9 @@ public class BallTask extends JFrame {
         createBlackHoles();
         createHoles();
 
-        new ServerConnection(channel);
-        new ClientConnection(channel, IP);
+        serverConnection = new ServerConnection(channel, this);
+        clientConnection = new ClientConnection(channel, IP);
+
         statistics = new Statistics(this);
 
         controlPanel.getPlayBtn().addActionListener(e -> {
@@ -92,7 +95,7 @@ public class BallTask extends JFrame {
     }
 
     public void createHoleLeft(String x, String y, String angleX, String angleY, String Color, String rectangleSize) {
-        Hole hole = new Hole(this.blackHoleList, this, view.getWidth() - Integer.parseInt(rectangleSize) * 2, Integer.parseInt(y));
+        Hole hole = new Hole(this.blackHoleList, this, view.getWidth() - (Integer.parseInt(rectangleSize) * 2) + 1, Integer.parseInt(y));
         hole.setAngleX(Integer.parseInt(angleX));
         hole.setAngleY(Integer.parseInt(angleY));
         hole.setRectangleSize(Integer.parseInt(rectangleSize));
@@ -186,4 +189,19 @@ public class BallTask extends JFrame {
         return blackHoleList;
     }
 
+    public ClientConnection getClientConnection() {
+        return clientConnection;
+    }
+
+    public void setClientConnection(ClientConnection clientConnection) {
+        this.clientConnection = clientConnection;
+    }
+
+    public ServerConnection getServerConnection() {
+        return serverConnection;
+    }
+
+    public void setServerConnection(ServerConnection serverConnection) {
+        this.serverConnection = serverConnection;
+    }
 }
